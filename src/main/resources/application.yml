@@ -1,0 +1,43 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: docchat-api
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: method
+
+docchat:
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    chat-model: ${OPENAI_CHAT_MODEL:gpt-4o-mini}
+    embedding-model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+    temperature: ${OPENAI_TEMPERATURE:0.0}
+  chroma:
+    base-url: ${CHROMA_URL:http://localhost:8000}
+    collection-name: ${CHROMA_COLLECTION:docchat}
+    timeout-seconds: ${CHROMA_TIMEOUT_SECONDS:60}
+  rag:
+    max-results: ${RAG_MAX_RESULTS:4}
+    min-score: ${RAG_MIN_SCORE:0.55}
+    chunk-size-chars: ${RAG_CHUNK_SIZE:1500}
+    chunk-overlap-chars: ${RAG_CHUNK_OVERLAP:150}

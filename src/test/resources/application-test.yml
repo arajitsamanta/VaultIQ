@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: docchat-api-test
+
+docchat:
+  openai:
+    api-key: test-mock-key
+    chat-model: gpt-4o-mini
+    embedding-model: text-embedding-3-small
+    temperature: 0.0
+  chroma:
+    base-url: http://localhost:8000
+    collection-name: docchat-test
+    timeout-seconds: 5
+  rag:
+    max-results: 4
+    min-score: 0.5
+    chunk-size-chars: 1000
+    chunk-overlap-chars: 100

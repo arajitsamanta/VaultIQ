@@ -1,0 +1,24 @@
+ACME CORP — EMPLOYEE HANDBOOK & BENEFITS SUMMARY (2026)
+
+1. Working Hours & Flexible Work
+Standard working hours are 9:00 AM to 5:00 PM EST, Monday through Friday. 
+Core collaboration hours are 10:00 AM to 3:00 PM EST. 
+Employees are eligible for hybrid remote work up to 3 days per week with manager approval.
+
+2. Paid Time Off (PTO)
+Full-time employees receive 20 days of paid time off per calendar year, accruing at 1.67 days per month worked.
+Unused PTO up to a maximum of 5 days may be rolled over into the following calendar year.
+Any rollover balance must be utilized prior to March 31st of that year.
+
+3. Health and Wellness Stipend
+Each eligible full-time team member receives an annual health and wellness stipend of $1,200 ($100/month).
+This stipend can be applied toward gym memberships, mental health apps, ergonomic home office equipment, or fitness trackers.
+
+4. Learning and Development
+Acme Corp provides up to $2,500 annually per employee for approved educational courses, technical certifications, and conference attendance.
+Tuition reimbursement requests must be submitted through the People Portal at least 14 days prior to course registration.
+
+5. Technology & Security Policy
+All company data must remain encrypted at rest and in transit.
+Employees must use hardware security keys (FIDO2/WebAuthn) for multi-factor authentication across all internal single sign-on (SSO) systems.
+Customer confidential data must never be pasted into unapproved public AI tools.
