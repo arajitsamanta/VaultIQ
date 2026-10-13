@@ -1,16 +1,17 @@
 spring:
   application:
-    name: docchat-api-test
+    name: vaultiq-api-test
 
-docchat:
+vaultiq:
   openai:
+    base-url: http://localhost:11434/v1
     api-key: test-mock-key
-    chat-model: gpt-4o-mini
-    embedding-model: text-embedding-3-small
+    chat-model: llama3.2
+    embedding-model: nomic-embed-text
     temperature: 0.0
   chroma:
     base-url: http://localhost:8000
-    collection-name: docchat-test
+    collection-name: vaultiq-test
     timeout-seconds: 5
   rag:
     max-results: 4

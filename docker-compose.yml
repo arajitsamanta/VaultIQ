@@ -1,7 +1,7 @@
 services:
   chromadb:
     image: chromadb/chroma:0.5.5
-    container_name: docchat-chromadb
+    container_name: vaultiq-chromadb
     ports:
       - "8000:8000"
     environment:
@@ -10,7 +10,7 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/v1/heartbeat || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/v1/heartbeat || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,16 +21,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: docchat-app
+    container_name: vaultiq-app
     ports:
       - "8080:8080"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_CHAT_MODEL=${OPENAI_CHAT_MODEL:-gpt-4o-mini}
-      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-http://host.docker.internal:11434/v1}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-ollama}
+      - OPENAI_CHAT_MODEL=${OPENAI_CHAT_MODEL:-llama3.2}
+      - OPENAI_EMBEDDING_MODEL=${OPENAI_EMBEDDING_MODEL:-nomic-embed-text}
       - OPENAI_TEMPERATURE=${OPENAI_TEMPERATURE:-0.0}
       - CHROMA_URL=http://chromadb:8000
-      - CHROMA_COLLECTION=docchat
+      - CHROMA_COLLECTION=vaultiq
       - RAG_MAX_RESULTS=4
       - RAG_MIN_SCORE=0.55
       - RAG_CHUNK_SIZE=1500
@@ -39,7 +40,7 @@ services:
       chromadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
       interval: 15s
       timeout: 5s
       retries: 3
