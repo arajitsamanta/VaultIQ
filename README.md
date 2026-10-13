@@ -2,15 +2,28 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://adoptium.net)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![LangChain4j](https://img.shields.io/badge/LangChain4j-0.35.0-blue.svg)](https://github.com/langchain4j/langchain4j)
+[![LangChain4j](https://img.shields.io/badge/LangChain4j-0.36.0-blue.svg)](https://github.com/langchain4j/langchain4j)
 [![Ollama](https://img.shields.io/badge/Ollama-llama3.2-black.svg)](https://ollama.ai)
 [![ChromaDB](https://img.shields.io/badge/Vector%20Store-ChromaDB-purple.svg)](https://www.trychroma.com)
 [![RAG](https://img.shields.io/badge/RAG-Powered-blueviolet.svg)](https://en.wikipedia.org/wiki/Retrieval-augmented_generation)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](LICENSE)
 
 **VaultIQ** is a production-style **Retrieval-Augmented Generation (RAG)** document question-answering REST API built with **Java 17**, **Spring Boot 3**, **LangChain4j**, **Ollama (`llama3.2` & `nomic-embed-text`)**, and **ChromaDB**.
 
 Upload documents (`PDF`, `TXT`, `MD`) into your vault. VaultIQ automatically parses, token-splits, generates dense embeddings using **`nomic-embed-text`**, and indexes them into ChromaDB. When queried, it retrieves the most relevant semantic chunks and prompts the local chat model (**`llama3.2`**) with strict grounding rules to produce precise answers accompanied by verifiable source citations. If the document does not contain the answer, VaultIQ responds honestly rather than hallucinating.
+
+---
+
+## Demo
+
+> Swagger UI
+
+<!-- Replace the placeholder below with an actual screenshot:
+     - Swagger UI mid-query: capture the POST /api/chat "Try it out" panel with a question submitted and the cited answer returned.
+     - Terminal Q&A: a cURL invocation followed by the JSON response showing `answer` + `citations`.
+-->
+
+![VaultIQ demo — Swagger UI ](docs/VaultIQ_Swagger.png)
 
 ---
 
@@ -93,7 +106,7 @@ flowchart TD
             OllamaChat["llama3.2\nChat Model\ntemperature=0.0"]
         end
         subgraph ChromaBox["ChromaDB port 8000"]
-            ChromaCol["Collection: docchat\nCosine Similarity Index\nPersistent Docker Volume"]
+            ChromaCol["Collection: VaultIQ\nCosine Similarity Index\nPersistent Docker Volume"]
         end
     end
 
@@ -187,10 +200,10 @@ flowchart LR
 
     subgraph DockerNet["Docker Compose Network"]
         direction TB
-        subgraph AppCont["docchat-app port 8080"]
+        subgraph AppCont["VaultIQ-app port 8080"]
             JVM["Spring Boot JVM\nREST API\nLangChain4j\nIn-Memory Metadata Store"]
         end
-        subgraph ChromaCont["docchat-chromadb port 8000"]
+        subgraph ChromaCont["VaultIQ-chromadb port 8000"]
             ChromaProc["ChromaDB 0.5.5\nIS_PERSISTENT=TRUE"]
             Vol[("chroma_data\nDocker Volume")]
             ChromaProc --- Vol
@@ -211,7 +224,7 @@ flowchart LR
 | Component | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Language & Framework** | Java 17, Spring Boot 3.3.4 | Core enterprise runtime and REST API |
-| **LLM & Embeddings** | LangChain4j 0.35.0, Local Ollama | Orchestration, `llama3.2`, `nomic-embed-text` |
+| **LLM & Embeddings** | LangChain4j 0.36.0, Local Ollama | Orchestration, `llama3.2`, `nomic-embed-text` |
 | **Vector Store** | ChromaDB (Docker) | Dense vector storage, cosine similarity indexing |
 | **Document Parsers** | Apache PDFBox, LangChain4j Text Parser | Native PDF, TXT, and Markdown parsing |
 | **API Documentation** | springdoc-openapi 2.6.0 | Interactive OpenAPI 3 spec & Swagger UI |
@@ -413,7 +426,7 @@ curl -X DELETE http://localhost:8080/api/documents/doc_a1b2c3d4e5f6
 
 ## Postman Collection
 
-A complete Postman collection is committed under [`postman/DocChat_API.postman_collection.json`](postman/DocChat_API.postman_collection.json).
+A complete Postman collection is committed under [`postman/VaultIQ_API.postman_collection.json`](postman/VaultIQ_API.postman_collection.json).
 - Import into Postman.
 - Set `baseUrl` variable to `http://localhost:8080`.
 - The upload request automatically saves the resulting `documentId` into collection variables for one-click testing of GET and DELETE operations.

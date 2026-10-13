@@ -30,7 +30,8 @@ public class LangChainConfig {
             @Value("${vaultiq.openai.chat-model:llama3.2}") String modelName,
             @Value("${vaultiq.openai.temperature:0.0}") double temperature) {
         String effectiveKey = (apiKey == null || apiKey.isBlank()) ? "ollama" : apiKey;
-        log.info("Initializing ChatLanguageModel with baseUrl: {}, model: {}, temperature: {}", baseUrl, modelName, temperature);
+        log.info("Initializing ChatLanguageModel with baseUrl: {}, model: {}, temperature: {}", baseUrl, modelName,
+                temperature);
         return OpenAiChatModel.builder()
                 .baseUrl(baseUrl)
                 .apiKey(effectiveKey)
@@ -58,7 +59,7 @@ public class LangChainConfig {
     @Bean
     public EmbeddingStore<TextSegment> embeddingStore(
             @Value("${vaultiq.chroma.base-url:http://localhost:8000}") String baseUrl,
-            @Value("${vaultiq.chroma.collection-name:docchat}") String collectionName,
+            @Value("${vaultiq.chroma.collection-name:VaultIQ}") String collectionName,
             @Value("${vaultiq.chroma.timeout-seconds:60}") int timeoutSeconds) {
         log.info("Connecting to ChromaDB at {} with collection '{}'", baseUrl, collectionName);
         return ChromaEmbeddingStore.builder()

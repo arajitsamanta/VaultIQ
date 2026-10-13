@@ -60,25 +60,23 @@ class DocumentServiceTest {
                 pdfParser,
                 textParser,
                 500,
-                50
-        );
+                50);
     }
 
     @Test
     @DisplayName("Should successfully upload, parse, chunk, embed, and store a text document")
     void shouldUploadTextDocumentSuccessfully() {
-        String content = "DocChat is an enterprise RAG service powered by Spring Boot and LangChain4j. "
+        String content = "VaultIQ is an enterprise RAG service powered by Spring Boot and LangChain4j. "
                 + "It allows users to ask questions over their proprietary documents with source citations.";
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "sample.txt",
                 "text/plain",
-                content.getBytes()
-        );
+                content.getBytes());
 
         when(textParser.parse(any(InputStream.class))).thenReturn(Document.from(content));
 
-        Embedding mockEmbedding = Embedding.from(new float[]{0.1f, 0.2f, 0.3f});
+        Embedding mockEmbedding = Embedding.from(new float[] { 0.1f, 0.2f, 0.3f });
         when(embeddingModel.embedAll(anyList())).thenAnswer(inv -> {
             List<TextSegment> segments = inv.getArgument(0);
             List<Embedding> embeddings = segments.stream().map(s -> mockEmbedding).toList();
@@ -120,8 +118,10 @@ class DocumentServiceTest {
     @Test
     @DisplayName("Should list all ingested documents sorted by upload time")
     void shouldListIngestedDocuments() {
-        DocumentMetadata doc1 = new DocumentMetadata("doc1", "first.pdf", "application/pdf", 1024, 2, List.of("c1", "c2"), Instant.now().minusSeconds(60));
-        DocumentMetadata doc2 = new DocumentMetadata("doc2", "second.txt", "text/plain", 2048, 4, List.of("c3", "c4"), Instant.now());
+        DocumentMetadata doc1 = new DocumentMetadata("doc1", "first.pdf", "application/pdf", 1024, 2,
+                List.of("c1", "c2"), Instant.now().minusSeconds(60));
+        DocumentMetadata doc2 = new DocumentMetadata("doc2", "second.txt", "text/plain", 2048, 4, List.of("c3", "c4"),
+                Instant.now());
         repository.save(doc1);
         repository.save(doc2);
 
@@ -134,7 +134,8 @@ class DocumentServiceTest {
     @Test
     @DisplayName("Should delete document metadata and purge embeddings from vector store")
     void shouldDeleteDocumentAndPurgeVectors() {
-        DocumentMetadata doc = new DocumentMetadata("doc123", "contract.pdf", "application/pdf", 1024, 2, List.of("cid-1", "cid-2"), Instant.now());
+        DocumentMetadata doc = new DocumentMetadata("doc123", "contract.pdf", "application/pdf", 1024, 2,
+                List.of("cid-1", "cid-2"), Instant.now());
         repository.save(doc);
 
         documentService.deleteDocument("doc123");

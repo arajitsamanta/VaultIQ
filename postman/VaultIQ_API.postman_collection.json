@@ -1,8 +1,8 @@
 {
   "info": {
     "_postman_id": "b3f09f02-a279-4ef2-92bb-fa1b6a7171d8",
-    "name": "DocChat API — RAG Document Q&A Service",
-    "description": "Production Postman collection for testing the DocChat API Spring Boot service with LangChain4j and ChromaDB.",
+    "name": "VaultIQ API — RAG Document Q&A Service",
+    "description": "Production Postman collection for testing the VaultIQ API Spring Boot service with LangChain4j and ChromaDB.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

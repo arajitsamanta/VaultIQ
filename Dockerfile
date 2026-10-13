@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for DocChat API
+# Multi-stage Dockerfile for VaultIQ API
 # Stage 1: Build the application with Maven & Temurin JDK 17
 FROM maven:3.9.8-eclipse-temurin-17 AS builder
 
@@ -18,12 +18,12 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Run as non-root user for security best practices
-RUN groupadd -r docchat && useradd -r -g docchat docchat
+RUN groupadd -r VaultIQ && useradd -r -g VaultIQ VaultIQ
 
-COPY --from=builder /build/target/docchat-api-1.0.0.jar app.jar
-RUN chown -R docchat:docchat /app
+COPY --from=builder /build/target/vaultiq-api-1.0.0.jar app.jar
+RUN chown -R VaultIQ:VaultIQ /app
 
-USER docchat
+USER VaultIQ
 
 EXPOSE 8080
 
