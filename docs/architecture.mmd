@@ -1,0 +1,107 @@
+flowchart TD
+    %% CLIENT LAYER
+    subgraph CL["Client Layer"]
+        Browser["Web Browser / Mobile App"]
+        Postman["Postman / cURL"]
+        SwaggerUI["Swagger UI\n/swagger-ui.html"]
+    end
+
+    %% API LAYER
+    subgraph API["REST API Layer — Spring Boot 3.3.4 port 8080"]
+        direction TB
+        subgraph Controllers["Controllers"]
+            DocCtrl["DocumentController\nPOST /api/documents\nGET /api/documents\nGET /api/documents/{id}\nDELETE /api/documents/{id}"]
+            ChatCtrl["ChatController\nPOST /api/chat"]
+            HealthCtrl["Actuator\n/actuator/health\n/actuator/metrics"]
+        end
+        subgraph ExHandling["Exception Handling"]
+            GEH["GlobalExceptionHandler\n@RestControllerAdvice"]
+            DNF["DocumentNotFoundException -> 404"]
+            DPE["DocumentProcessingException -> 422"]
+        end
+        DocCtrl & ChatCtrl -.->|throws| GEH
+        GEH -.-> DNF & DPE
+    end
+
+    %% SERVICE LAYER
+    subgraph SVC["Service Layer"]
+        direction LR
+        subgraph DocPipeline["Document Ingestion Pipeline"]
+            direction TB
+            P1["1. Select Parser\nPDF / TXT / MD"]
+            P2["2. Parse Document\nApachePDFBox or TextParser"]
+            P3["3. Recursive Split\n1500 chars, 150 overlap"]
+            P4["4. Enrich Chunks\ndocId, fileName, chunkIndex"]
+            P5["5. Embed Chunks\nnomic-embed-text via Ollama"]
+            P6["6. Store Vectors\nChromaDB collection"]
+            P7["7. Persist Metadata\nDocumentMetadataRepository"]
+            P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
+        end
+        subgraph ChatPipeline["RAG Query Pipeline"]
+            direction TB
+            Q1["1. Guard Check\nrepository.count > 0"]
+            Q2["2. Embed Question\nnomic-embed-text via Ollama"]
+            Q3["3. Top-K Search\nmaxResults=4, minScore=0.55"]
+            Q4["4. Build Context\n& CitationDto list"]
+            Q5["5. Grounded Prompt\nStrict Anti-Hallucination Rules"]
+            Q6["6. LLM Generate\nllama3.2 via Ollama"]
+            Q7["7. Return ChatResponse\nanswer + citations"]
+            Q1 --> Q2 --> Q3 --> Q4 --> Q5 --> Q6 --> Q7
+        end
+    end
+
+    %% CONFIG LAYER
+    subgraph CFG["Configuration — LangChainConfig"]
+        direction LR
+        CfgChat["ChatLanguageModel Bean\nOpenAiChatModel\ntimeout 120s"]
+        CfgEmbed["EmbeddingModel Bean\nOpenAiEmbeddingModel\ntimeout 120s"]
+        CfgChroma["EmbeddingStore Bean\nChromaEmbeddingStore\ntimeout 60s"]
+        CfgParsers["Parser Beans\nApachePdfBoxDocumentParser\nTextDocumentParser"]
+    end
+
+    %% DATA LAYER
+    subgraph DATA["Data Layer"]
+        Repo["DocumentMetadataRepository\nIn-Memory ConcurrentHashMap\nsave / findById / findAll\ndeleteById / count"]
+    end
+
+    %% EXTERNAL SERVICES
+    subgraph EXT["External Services"]
+        direction LR
+        subgraph OllamaBox["Ollama host port 11434"]
+            OllamaEmbed["nomic-embed-text\nEmbedding Model"]
+            OllamaChat["llama3.2\nChat Model\ntemperature=0.0"]
+        end
+        subgraph ChromaBox["ChromaDB port 8000"]
+            ChromaCol["Collection: VaultIQ\nCosine Similarity Index\nPersistent Docker Volume"]
+        end
+    end
+
+    %% CLIENT TO API
+    Browser & Postman -->|HTTP| DocCtrl & ChatCtrl
+    SwaggerUI -->|OpenAPI 3| DocCtrl & ChatCtrl
+    Browser & Postman --> HealthCtrl
+
+    %% API TO SERVICE
+    DocCtrl -->|MultipartFile| P1
+    ChatCtrl -->|ChatRequest| Q1
+    P7 -->|DocumentResponse 201| DocCtrl
+    Q7 -->|ChatResponse 200| ChatCtrl
+
+    %% SERVICE TO CONFIG
+    P5 -.->|uses| CfgEmbed
+    P6 -.->|uses| CfgChroma
+    P1 -.->|uses| CfgParsers
+    Q2 -.->|uses| CfgEmbed
+    Q3 -.->|uses| CfgChroma
+    Q6 -.->|uses| CfgChat
+
+    %% SERVICE TO DATA
+    P7 -->|save| Repo
+    DocCtrl -->|findAll / findById| Repo
+    DocCtrl -->|deleteById + removeAll chunkIds| Repo
+    Q1 -->|count| Repo
+
+    %% CONFIG TO EXTERNAL
+    CfgEmbed -->|POST /v1/embeddings| OllamaEmbed
+    CfgChat -->|POST /v1/chat/completions| OllamaChat
+    CfgChroma -->|REST API| ChromaCol
