@@ -1,5 +1,7 @@
 # VaultIQ — RAG Document Q&A Service
 
+![VaultIQ — document Q&A with grounded answers and citations](docs/vaultiq-cover.png)
+
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://adoptium.net)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![LangChain4j](https://img.shields.io/badge/LangChain4j-0.36.0-blue.svg)](https://github.com/langchain4j/langchain4j)
